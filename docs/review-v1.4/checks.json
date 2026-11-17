@@ -1,0 +1,175 @@
+{
+  "scope": "HTML prototype only; fixture similarities, no model/Android validation",
+  "results": [
+    {
+      "check": "Initial render has the v1.4 title and no JavaScript error",
+      "status": "passed"
+    },
+    {
+      "check": "A session override is frozen into the saved recording snapshot",
+      "status": "passed"
+    },
+    {
+      "check": "History separates daily reports, review recordings, planning recordings and experience cards",
+      "status": "passed"
+    },
+    {
+      "check": "Review no longer duplicates the experience-card module",
+      "status": "passed"
+    },
+    {
+      "check": "Pack selection, term editing and revision persistence work independently",
+      "status": "passed"
+    },
+    {
+      "check": "Returning from a pack refreshes the library and preserves selected packs",
+      "status": "passed"
+    },
+    {
+      "check": "Creating an empty professional pack persists it without invented terms",
+      "status": "passed"
+    },
+    {
+      "check": "Name-only creation needs explicit historical enrollment before automatic matching",
+      "status": "passed"
+    },
+    {
+      "check": "Fixture matching assigns only the qualifying voice without training its result back into the template",
+      "status": "passed"
+    },
+    {
+      "check": "Explicit sample demonstration proceeds from recording to confirmation and role creation",
+      "status": "passed"
+    },
+    {
+      "check": "Manual merging preserves the name draft, assigns only selected evidence and updates linked quotes",
+      "status": "passed"
+    },
+    {
+      "check": "Undo restores voice evidence and quote ownership after a merge",
+      "status": "passed"
+    },
+    {
+      "check": "Automatic clusters can be split and the do-not-merge constraints survive reload",
+      "status": "passed"
+    },
+    {
+      "check": "A conflict constraint prevents a similarity chain from merging incompatible evidence",
+      "status": "passed"
+    },
+    {
+      "check": "The page fits 320, 390 and 768 pixel viewports",
+      "status": "passed"
+    },
+    {
+      "check": "All covered browser paths finish without uncaught JavaScript errors",
+      "status": "passed"
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "screenshots/01-recording-full.png",
+      "height": 1078
+    },
+    {
+      "file": "screenshots/01-01-session-lexicons.png",
+      "height": 840
+    },
+    {
+      "file": "screenshots/02-history-recordings.png",
+      "height": 1595
+    },
+    {
+      "file": "screenshots/02-01-daily-reviews.png",
+      "height": 874
+    },
+    {
+      "file": "screenshots/02-01-01-daily-review-detail.png",
+      "height": 851
+    },
+    {
+      "file": "screenshots/02-02-review-recordings.png",
+      "height": 883
+    },
+    {
+      "file": "screenshots/02-03-planning-recordings.png",
+      "height": 864
+    },
+    {
+      "file": "screenshots/02-04-experience-cards.png",
+      "height": 840
+    },
+    {
+      "file": "screenshots/03-review-full.png",
+      "height": 1087
+    },
+    {
+      "file": "screenshots/04-settings-full.png",
+      "height": 1454
+    },
+    {
+      "file": "screenshots/04-01-lexicon-library.png",
+      "height": 840
+    },
+    {
+      "file": "screenshots/04-01-01-professional-pack.png",
+      "height": 840
+    },
+    {
+      "file": "screenshots/04-01-01-01-term-editor.png",
+      "height": 963
+    },
+    {
+      "file": "screenshots/04-01-02-new-pack-empty.png",
+      "height": 840
+    },
+    {
+      "file": "screenshots/05-roles-full.png",
+      "height": 923
+    },
+    {
+      "file": "screenshots/05-01-create-role-paths.png",
+      "height": 840
+    },
+    {
+      "file": "screenshots/05-01-01-name-enrollment.png",
+      "height": 840
+    },
+    {
+      "file": "screenshots/05-01-01-01-pending-voice.png",
+      "height": 840
+    },
+    {
+      "file": "screenshots/05-01-01-02-history-enrollment.png",
+      "height": 840
+    },
+    {
+      "file": "screenshots/05-02-04-known-role-matching.png",
+      "height": 840
+    },
+    {
+      "file": "screenshots/05-01-02-sample-enrollment.png",
+      "height": 840
+    },
+    {
+      "file": "screenshots/05-01-02-01-sample-confirmation.png",
+      "height": 840
+    },
+    {
+      "file": "screenshots/05-02-manual-voice-pool.png",
+      "height": 906
+    },
+    {
+      "file": "screenshots/05-02-01-synthesize-new-person.png",
+      "height": 840
+    },
+    {
+      "file": "screenshots/05-02-02-merge-existing-person.png",
+      "height": 840
+    },
+    {
+      "file": "screenshots/05-02-03-automatic-clusters.png",
+      "height": 1169
+    }
+  ]
+}
