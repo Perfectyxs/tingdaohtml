@@ -30,6 +30,10 @@
       "status": "passed"
     },
     {
+      "check": "Restoring a legacy backup migrates string hotwords into the professional pack without loss",
+      "status": "passed"
+    },
+    {
       "check": "Name-only creation needs explicit historical enrollment before automatic matching",
       "status": "passed"
     },
@@ -47,6 +51,10 @@
     },
     {
       "check": "Undo restores voice evidence and quote ownership after a merge",
+      "status": "passed"
+    },
+    {
+      "check": "Undoing synthesis of a new person also removes the newly created role",
       "status": "passed"
     },
     {

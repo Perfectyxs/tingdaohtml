@@ -34,6 +34,8 @@ with sync_playwright() as p:
         page.wait_for_timeout(270)
 
     def nav(name):
+        while page.locator('#appOverlay.open').count():
+            click('close')
         page.locator(f'[data-nav="{name}"]').click()
         page.wait_for_timeout(60)
 
@@ -124,6 +126,15 @@ with sync_playwright() as p:
     capture('04-01-02-new-pack-empty')
     assert any(p['name']=='测试专业' for p in state()['settings']['lexiconPacks'])
     ok('Creating an empty professional pack persists it without invented terms')
+    # Restoring a pre-pack backup must preserve its legacy hotwords.
+    data=state();settings=data['settings'].copy()
+    settings.pop('lexiconPacks');settings.pop('lexiconSelected');settings['hotwords']='旧词甲,旧词乙'
+    payload={'schema':'tingdao.backup.v1','sections':{'models':{'settings':settings,'weights':data['weights']}}}
+    nav('settings');click('restore')
+    page.locator('#restoreFile').set_input_files({'name':'legacy.json','mimeType':'application/json','buffer':json.dumps(payload,ensure_ascii=False).encode()})
+    click('restore-confirm')
+    assert [t['word'] for t in state()['settings']['lexiconPacks'][0]['terms']] == ['旧词甲','旧词乙']
+    ok('Restoring a legacy backup migrates string hotwords into the professional pack without loss')
     fresh();nav('roles')
     capture('05-roles-full')
     click('new-role')
@@ -181,6 +192,13 @@ with sync_playwright() as p:
     page.locator('#undoButton').click()
     assert len(state()['voices']) == 5
     ok('Undo restores voice evidence and quote ownership after a merge')
+    fresh();nav('roles');click('voices')
+    before_roles=len(state()['roles']);page.locator('[data-voice="v1"]').check();click('voice-merge')
+    page.locator('#revealName').fill('撤销新人物测试');click('voice-create')
+    assert len(state()['roles'])==before_roles+1
+    page.locator('#undoButton').click()
+    assert len(state()['roles'])==before_roles and len(state()['voices'])==5
+    ok('Undoing synthesis of a new person also removes the newly created role')
     fresh();nav('roles');click('voices');page.locator('#voiceAutoGroup').check();click('voice-automatic')
     capture('05-02-03-automatic-clusters')
     assert page.locator('#appOverlay .cluster-card').count() == 2

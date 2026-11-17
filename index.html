@@ -866,6 +866,8 @@ const PREVIEW_BUILD='1.4 · 2026-11-17';
 const demoPairs={'v1:v2':.91,'v1:v3':.88,'v2:v3':.87,'v4:v5':.89};
 const lexKinds=['人名','机构 / 品牌','地点 / 楼盘','专业术语','缩写','其他'];
 function initPreview(){
+  if(typeof D.settings.hotwords==='string')D.settings.hotwords=D.settings.hotwords.split(/[,，\n]+/).map(w=>w.trim()).filter(Boolean).map(word=>({id:uid(),word,category:'其他',enabled:true}));
+  D.settings.hotwords??=[];
   ui.reviewKind='每日复盘';ui.voiceView='manual';ui.lexScope='default';ui.recording=false;ui.elapsed=0;ui.silence=0;
   D.voiceAssignments??=[];D.voiceExcludedPairs??=[];D.settings.autoGroup??=false;
   D.roles.forEach(r=>{r.sample??='待采样';r.voiceIds??=[];r.templateRevision??=0;r.autoMatch??=false});
