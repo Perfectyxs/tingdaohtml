@@ -2,12 +2,12 @@
 
 在线预览：**https://perfectyxs.github.io/tingdaohtml/**
 
-当前改版：**v1.4 · 2026-11-17**。HTML 是独立仓库；Android、唯一系统架构和 APK 发布位于 [Perfectyxs/Earthonline](https://github.com/Perfectyxs/Earthonline)。
+当前改版：**v1.4.1 · 2026-11-17**。HTML 是独立仓库；Android、唯一系统架构和 APK 发布位于 [Perfectyxs/Earthonline](https://github.com/Perfectyxs/Earthonline)。
 
 - 历史复盘分 **每日复盘 / 复盘录音 / 计划记录**；经验卡集中在历史。
-- 新增角色分 **名称建档 / 主动录制声纹 / 从陌生声纹合成**。
+- 新增角色点“＋”直接打开录制声纹，姓名、标签、头像、录制、重录和保存在同一页完成；取消三选一和中间确认页。
 - 陌生声纹保留 **手动勾选 / 自动聚集**，可合成新人物或并入旧人物；支持拆组和撤销归属。
-- 专业词表按整包多选、进入编辑；录音保存本次词表快照。
+- 专业词表只从设置管理，录音页不新增词表入口；录音后台沿用默认选择并保存快照。
 - 设置新增“复盘与角色”，移动评分权重和角色标签。
 
 [逐页长截图、差异与验收记录](docs/review-v1.4/README.md) · [浏览器验证结果](docs/review-v1.4/checks.json)

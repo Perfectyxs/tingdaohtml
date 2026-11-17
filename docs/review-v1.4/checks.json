@@ -2,11 +2,11 @@
   "scope": "HTML prototype only; fixture similarities, no model/Android validation",
   "results": [
     {
-      "check": "Initial render has the v1.4 title and no JavaScript error",
+      "check": "Initial render has the v1.4.1 title and no JavaScript error",
       "status": "passed"
     },
     {
-      "check": "A session override is frozen into the saved recording snapshot",
+      "check": "Recording has no added lexicon entry in all five modes and uses default packs in the background",
       "status": "passed"
     },
     {
@@ -34,15 +34,23 @@
       "status": "passed"
     },
     {
-      "check": "Name-only creation needs explicit historical enrollment before automatic matching",
+      "check": "Historical enrollment is reached directly from existing role details without an extra manager page",
       "status": "passed"
     },
     {
-      "check": "Fixture matching assigns only the qualifying voice without training its result back into the template",
+      "check": "Fixture matching assigns only qualifying voices without training results back into the template",
       "status": "passed"
     },
     {
-      "check": "Explicit sample demonstration proceeds from recording to confirmation and role creation",
+      "check": "The plus button opens one recording form; finishing keeps fields and the ready state in that same page",
+      "status": "passed"
+    },
+    {
+      "check": "Retry and saving stay in one workflow and return to the role list without another manager page",
+      "status": "passed"
+    },
+    {
+      "check": "Closing the recorder cancels its timer and never creates a partial role",
       "status": "passed"
     },
     {
@@ -77,11 +85,7 @@
   "screenshots": [
     {
       "file": "screenshots/01-recording-full.png",
-      "height": 1078
-    },
-    {
-      "file": "screenshots/01-01-session-lexicons.png",
-      "height": 840
+      "height": 1026
     },
     {
       "file": "screenshots/02-history-recordings.png",
@@ -136,19 +140,11 @@
       "height": 923
     },
     {
-      "file": "screenshots/05-01-create-role-paths.png",
+      "file": "screenshots/05-01-role-detail.png",
       "height": 840
     },
     {
-      "file": "screenshots/05-01-01-name-enrollment.png",
-      "height": 840
-    },
-    {
-      "file": "screenshots/05-01-01-01-pending-voice.png",
-      "height": 840
-    },
-    {
-      "file": "screenshots/05-01-01-02-history-enrollment.png",
+      "file": "screenshots/05-01-01-history-enrollment.png",
       "height": 840
     },
     {
@@ -156,12 +152,12 @@
       "height": 840
     },
     {
-      "file": "screenshots/05-01-02-sample-enrollment.png",
-      "height": 840
+      "file": "screenshots/05-03-direct-role-recorder.png",
+      "height": 862
     },
     {
-      "file": "screenshots/05-01-02-01-sample-confirmation.png",
-      "height": 840
+      "file": "screenshots/05-03-01-sample-ready-inline.png",
+      "height": 862
     },
     {
       "file": "screenshots/05-02-manual-voice-pool.png",

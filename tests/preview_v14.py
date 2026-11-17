@@ -66,17 +66,17 @@ with sync_playwright() as p:
         screenshots.append({'file': 'screenshots/' + name + '.png', 'height': round(dimensions['height'])})
 
     fresh()
-    assert page.title().endswith('v1.4')
-    ok('Initial render has the v1.4 title and no JavaScript error')
+    assert page.title().endswith('v1.4.1')
+    ok('Initial render has the v1.4.1 title and no JavaScript error')
     capture('01-recording-full')
-    click('lexicon-session')
-    capture('01-01-session-lexicons')
-    page.locator('[data-lex-session="finance"]').check()
-    click('lexicon-use-session')
-    click('toggle-record')
-    click('finish-record')
-    assert len(state()['sessions'][0]['lexiconSnapshot']['packs']) == 3
-    ok('A session override is frozen into the saved recording snapshot')
+    for mode in ('监听','随想','专项','计划','复盘'):
+        page.locator(f'#modeRow [data-mode="{mode}"]').click()
+        assert page.locator('#screen-record [data-action="lexicon-session"]').count() == 0
+        assert page.locator('#screen-record .lexicon-record').count() == 0
+    page.locator('#modeRow [data-mode="监听"]').click()
+    click('toggle-record');click('finish-record')
+    assert {p['id'] for p in state()['sessions'][0]['lexiconSnapshot']['packs']} == {'legacy','luxury'}
+    ok('Recording has no added lexicon entry in all five modes and uses default packs in the background')
     nav('history')
     capture('02-history-recordings')
     page.locator('[data-history-tab="复盘"]').click()
@@ -137,42 +137,57 @@ with sync_playwright() as p:
     ok('Restoring a legacy backup migrates string hotwords into the professional pack without loss')
     fresh();nav('roles')
     capture('05-roles-full')
-    click('new-role')
-    capture('05-01-create-role-paths')
-    assert page.locator('#appOverlay .entry-choice').count() == 3
-    click('role-name')
-    capture('05-01-01-name-enrollment')
-    page.locator('#newRoleName').fill('历史认领测试')
-    click('role-create-next')
-    capture('05-01-01-01-pending-voice')
+    click('role',id='r1')
+    capture('05-01-role-detail')
     expect(page.locator('#appOverlay')).to_contain_text('尚无声纹样本')
-    assert not state()['roles'][-1]['autoMatch']
+    assert not next(r for r in state()['roles'] if r['id']=='r1')['autoMatch']
+    assert page.locator('#appOverlay [data-action="role-voice"]').count()==0
     click('role-history-match')
-    capture('05-01-01-02-history-enrollment')
+    capture('05-01-01-history-enrollment')
     page.locator('[data-history-voice="v1"]').check()
     page.locator('[data-history-voice="v2"]').check()
     click('role-history-confirm')
-    role=state()['roles'][-1]
-    assert role['voiceIds'] == ['v1','v2'] and role['autoMatch']
-    ok('Name-only creation needs explicit historical enrollment before automatic matching')
+    role=next(r for r in state()['roles'] if r['id']=='r1')
+    assert role['voiceIds']==['v1','v2'] and role['autoMatch']
+    ok('Historical enrollment is reached directly from existing role details without an extra manager page')
     click('voices');click('voice-match-run')
     capture('05-02-04-known-role-matching')
     expect(page.locator('#appOverlay')).to_contain_text('示例规则通过')
     click('voice-match-apply')
     data=state()
-    assert {v['id'] for v in data['voices']} == {'v4','v5'}
-    assert data['roles'][-1]['voiceIds'] == ['v1','v2']
-    ok('Fixture matching assigns only the qualifying voice without training its result back into the template')
-    fresh();nav('roles');click('new-role');click('role-sample')
-    page.locator('#newRoleName').fill('主动采样测试')
-    click('role-create-next')
-    capture('05-01-02-sample-enrollment')
-    page.clock.install();click('sample-start');page.clock.run_for(8500)
-    expect(page.locator('#appOverlay')).to_contain_text('确认声纹样本')
-    capture('05-01-02-01-sample-confirmation')
-    click('sample-save')
-    assert state()['roles'][-1]['autoMatch']
-    ok('Explicit sample demonstration proceeds from recording to confirmation and role creation')
+    assert {v['id'] for v in data['voices']}=={'v4','v5'}
+    assert next(r for r in data['roles'] if r['id']=='r1')['voiceIds']==['v1','v2']
+    ok('Fixture matching assigns only qualifying voices without training results back into the template')
+    fresh();nav('roles');click('new-role')
+    capture('05-03-direct-role-recorder')
+    assert page.locator('#appOverlay .entry-choice').count()==0
+    assert page.locator('#appOverlay [data-action="role-name"],#appOverlay [data-action="role-sample"],#appOverlay [data-action="voices"]').count()==0
+    expect(page.locator('#appOverlay [data-action="sample-save"]')).to_be_disabled()
+    assert page.locator('#appOverlay [aria-label="关闭"]').count()==1
+    page.locator('#newRoleName').fill('同页采样测试')
+    page.locator('#newRoleTag').select_option('朋友')
+    click('new-avatar-pick',value='m2')
+    page.clock.install();click('sample-start');click('sample-stop')
+    expect(page.locator('#appOverlay')).to_contain_text('录制中')
+    page.clock.run_for(3500);click('sample-stop')
+    expect(page.locator('#appOverlay')).to_contain_text('样本已就绪')
+    capture('05-03-01-sample-ready-inline')
+    assert page.locator('#newRoleName').input_value()=='同页采样测试'
+    assert page.locator('#newRoleTag').input_value()=='朋友'
+    assert page.locator('#appOverlay [aria-label="关闭"]').count()==1
+    ok('The plus button opens one recording form; finishing keeps fields and the ready state in that same page')
+    click('sample-redo');page.clock.run_for(100)
+    expect(page.locator('#appOverlay [data-action="sample-save"]')).to_be_disabled()
+    click('sample-start');page.clock.run_for(8500);click('sample-save')
+    role=state()['roles'][-1]
+    assert role['autoMatch'] and role['name']=='同页采样测试' and role['avatar']=='m2'
+    assert page.locator('#appOverlay.open').count()==0
+    ok('Retry and saving stay in one workflow and return to the role list without another manager page')
+    fresh();nav('roles');before_roles=len(state()['roles']);click('new-role')
+    page.locator('#newRoleName').fill('取消测试');click('sample-start');click('close')
+    page.clock.run_for(1500)
+    assert len(state()['roles'])==before_roles and page.locator('#appOverlay.open').count()==0
+    ok('Closing the recorder cancels its timer and never creates a partial role')
     fresh();nav('roles');click('voices')
     capture('05-02-manual-voice-pool')
     page.locator('[data-voice="v1"]').check();page.locator('[data-voice="v2"]').check()
