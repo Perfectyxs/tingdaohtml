@@ -3,7 +3,7 @@ import hashlib,json,os
 from pathlib import Path
 from playwright.sync_api import sync_playwright,expect
 ROOT=Path(__file__).resolve().parents[1]
-OUT=ROOT/'docs/review-v1.4.2';OUT.mkdir(exist_ok=True)
+OUT=Path(os.environ.get('CUE_TEST_OUT', ROOT/'docs/review-v1.4.2'));OUT.mkdir(exist_ok=True)
 checks=[];shots=[];errors=[]
 def ok(name):checks.append({'check':name,'status':'passed'})
 with sync_playwright() as p:
@@ -61,6 +61,7 @@ with sync_playwright() as p:
   close()
   ok(name+'日计划打开同日列表，周计划打开原有周计划锚')
   click('cue-step',mode=name,step='1')
+  expect(page.locator('#appOverlay .sheet-head h3')).to_contain_text('AI 总结');close()
   expect(page.locator('.flow-cue-hint')).to_contain_text('当前仍需接入服务')
   click('cue-period',mode=name,period='周')
   expect(page.locator('[data-action="cue-step"][data-step="1"]')).to_have_attribute('aria-current','step')

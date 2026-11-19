@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="theme-color" content="#f4f6fa"/>
-<title>听道 · 计划与复盘提词器原型 v1.4.2</title>
+<title>听道 · 计划与复盘提词器原型 v1.4.3</title>
 <style>
 :root{
   --bg:#eef1f6;--paper:#f8f9fc;--ink:#171a20;--sub:#69717e;--muted:#98a0ac;
@@ -420,7 +420,7 @@ svg{display:block}
 .month-grid{margin-top:8px}.month-day{font-size:11px}.month-day.has-data:after{bottom:3px}
 </style>
 <style>
-.overlay .sheet,.overlay.full .sheet{width:100%;min-width:0}.sheet-body{overflow-x:hidden}
+.overlay .sheet,.overlay.full .sheet{width:100%;min-width:0;max-height:var(--sheet-max,85%)!important}.sheet-body{overflow-x:hidden}
 .tag-palette{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.tag-choice{min-width:0;width:100%;white-space:normal;text-align:left;overflow-wrap:anywhere;line-height:1.45;border:1px solid var(--line)}
 .palette-presets{display:grid;gap:12px;margin-top:14px}.palette-group strong{font-size:11px;display:block;margin-bottom:7px}.palette-colors{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}.palette-color{display:flex;align-items:center;flex-direction:column;gap:5px;min-width:0;padding:6px 2px;border-radius:10px;background:var(--glass);border:1px solid transparent}.palette-color.active{border-color:var(--blue)}.palette-color i{display:block;width:21px;height:21px;border-radius:50%;box-shadow:inset 0 1px 2px #0001}.palette-color small{font-size:8px;color:var(--sub);white-space:nowrap}
 .avatar-edit{padding:0;background:none;display:inline-flex;flex:none;border-radius:15px}.pixel-role{display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--avatar-color) 20%,transparent);background:color-mix(in srgb,var(--avatar-color) 28%,var(--paper));color:#283242;overflow:hidden}.pixel-role svg{width:86%;height:86%}.pixel-me{background:conic-gradient(from 220deg,#a0b9d8,#bfa4c9,#daaac1,#d8bc9d,#afcfaa,#9dc7c4,#a0b9d8)}:root[data-theme=dark] .pixel-role{color:#f0f3f9}
@@ -597,7 +597,7 @@ const save=()=>{try{localStorage.setItem('tingdao-v13',JSON.stringify({schema:13
 let toastTimer,undoTimer,undoFn;function toast(t){$('#toast').textContent=t;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),2600)}
 function undo(message,fn){clearInterval(undoTimer);undoFn=fn;let left=5;$('#undoMessage').textContent=message;$('#undoButton').textContent='撤销 · '+left+'s';$('#undoBar').classList.add('show');undoTimer=setInterval(()=>{left--;$('#undoButton').textContent='撤销 · '+left+'s';if(left<=0){clearInterval(undoTimer);undoFn=null;$('#undoBar').classList.remove('show')}},1000)}
 function show(title,body,full=false,key=''){ui.stack.push({title,body,full,key});drawModal()}
-function drawModal(){const x=ui.stack.at(-1);const ov=$('#appOverlay');if(!x){ov.classList.remove('open');return}ov.className='overlay open'+(x.full?' full':'');ov.innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(x.title)}"><div class="handle"></div><div class="sheet-head"><div><h3>${esc(x.title)}</h3></div>${btn(ui.stack.length>1?'‹':'×','close','back-btn','aria-label="'+(ui.stack.length>1?'返回':'关闭')+'"')}</div><div class="sheet-body">${x.body}</div></div>`;const footer=$('[data-sheet-footer]',ov);if(footer)$('.sheet',ov).appendChild(footer);updateRanges();}
+function drawModal(){const x=ui.stack.at(-1);const ov=$('#appOverlay');if(!x){ov.classList.remove('open');return}ov.className='overlay open'+(x.full?' full':'');const screen=$('.screen.active'),bar=$('.topbar',screen||document),box=ov.getBoundingClientRect();const barBottom=bar?bar.getBoundingClientRect().bottom-box.top+(screen?.scrollTop||0):110;ov.style.setProperty('--sheet-max',Math.max(180,box.height-Math.max(88,barBottom+8))+'px');ov.innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(x.title)}"><div class="handle"></div><div class="sheet-head"><div><h3>${esc(x.title)}</h3></div>${btn(ui.stack.length>1?'‹':'×','close','back-btn','aria-label="'+(ui.stack.length>1?'返回':'关闭')+'"')}</div><div class="sheet-body">${x.body}</div></div>`;const footer=$('[data-sheet-footer]',ov);if(footer)$('.sheet',ov).appendChild(footer);updateRanges();}
 function replaceModal(title,body,full=false,key=''){if(ui.stack.length)ui.stack.pop();show(title,body,full,key)}
 function syncOpenPanel(){const x=ui.stack.at(-1);if(!x){drawModal();return}switch(x.key){case 'anchor':anchor(ui.anchorLevel,true);break;case 'cue-tasks':cueDayPlans(true);break;case 'tasks':replaceModal('今日计划',card(taskRows(todayTasks())),true,'tasks');break;case 'sleep-records':replaceModal('睡眠记录',sleepRows(),false,'sleep-records');break;case 'panorama':ui.stack.pop();panorama();break;case 'role':roleDetail(ui.roleId,true);break;case 'lexicon-library':lexiconLibrary(true);break;case 'lexicon-pack':lexPackDetail(ui.lexPackId,true);break;case 'voices':voices(true);break;case 'role-voice':roleVoicePanel(ui.voiceRoleId,true);break;case 'experience-library':replaceModal('经验卡管理',experienceList(),true,'experience-library');break;default:drawModal()}}
 function close(){ui.stack.pop();syncOpenPanel()}
@@ -638,6 +638,18 @@ $('#screen-record').innerHTML=top('录音',btn(ic('inbox'),'pool','icon-btn',`ar
 ui.mode==='随想'?ideaCard():specialCard())+
 head('今日声音')+card('<div class="row between"><b>2h 46m</b><span class="tiny">对话 112′ · 学习 16′ · 娱乐 38′</span></div>');}
 function formatTime(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+
+function flowResult(){
+ const session=D.sessions.find(x=>x.id===ui.flowSession)||D.sessions.find(x=>x.flowVersion===1&&x.mode===ui.mode);
+ if(session)ui.flowSession=session.id;
+ if(!session){show('AI 总结',card('<p class="topic-copy">先结束一段计划或复盘录音，保存后在这里查看转录和整理状态。</p>'));return}
+ const candidates=D.pool.filter(x=>x.sourceIds?.includes(session.id));
+ const summary=session.demoSummary||'转录和本地 AI 尚未接入；音频记录已保存，等待处理。';
+ show('录音整理',card(`<b>${esc(session.title)}</b><p class="tiny">${esc(session.date)} · ${esc(session.mode)}模式 · 原记录保留在历史</p><p class="topic-copy">${esc(summary)}</p>`)+`<p class="tiny mt12">${session.demoSummary?'这是示例转录与示例整理结果，不是实际识别。':'真实流程：转录完成后，本地 AI 生成摘要和待确认卡。'}</p>`+(session.demoSummary?btn('查看待办确认 · '+candidates.length,'flow-pool','btn primary full-width mt12'):btn('载入示例，体验整理流程','flow-demo','btn primary full-width mt12'))+btn('查看历史记录','flow-history','btn full-width mt12'),false,'flow-result');
+}
+function sessionModeForHistory(){return D.sessions.find(x=>x.id===ui.flowSession)?.mode==='复盘'?'复盘录音':'计划记录'}
+function flowReceipt(){const session=D.sessions.find(x=>x.id===ui.flowSession)||D.sessions.find(x=>x.flowVersion===1&&x.mode===ui.mode);if(session)ui.flowSession=session.id;const tasks=session?D.tasks.filter(t=>t.sourceIds?.includes(session.id)):[];const pending=session?D.pool.filter(t=>t.sourceIds?.includes(session.id)):[];show('同步结果',card(`<p class="topic-copy">${session?'已确认 '+tasks.length+' 项进入对应计划；还有 '+pending.length+' 项待确认。':'结束录音并确认待办后，这里显示写入结果。'}</p><p class="tiny">同步指写入本机计划和历史，不代表上传。</p>`)+btn('查看待办确认','flow-pool','btn full-width mt12')+btn('查看历史记录','flow-history','btn full-width mt12'),false,'flow-receipt')}
+
 function poolBody(){return `<div class="row between"><span class="tiny">共 ${D.pool.length} 条，确认后进入对应周期</span>${btn(ui.batch?'取消批量':'批量处理','pool-batch','inline-link')}</div>${ui.batch?`<div class="small-card mt12"><div class="row between"><span class="tiny" id="poolSelectedCount">已选 ${ui.selected.size} 条</span>${btn('全选 / 取消','pool-all','inline-link')}</div>${periodButtons(ui.period,'data-batch-period')}${btn('确认所选入库','pool-approve-batch','btn primary full-width mt12')}</div>`:''}${D.pool.map(t=>`<div class="pool-item"><div class="row">${ui.batch?`<input aria-label="选择${esc(t.title)}" type="checkbox" class="check" data-pool-select="${t.id}" ${ui.selected.has(t.id)?'checked':''}/>`:''}<div class="grow"><div class="tiny">${esc(t.source)}</div><input aria-label="待办标题" type="text" data-pool-title="${t.id}" value="${esc(t.title)}"/><p class="tiny" style="margin:4px 0">${esc(t.detail)}</p></div></div>${!ui.batch?periodButtons(t.period,'data-pool-period',t.id)+`<div class="pool-actions">${btn('忽略','pool-ignore','inline-link',`data-id="${t.id}"`)}${btn('确认入库','pool-approve','inline-link',`data-id="${t.id}"`)}</div>`:''}</div>`).join('')||'<div class="empty">待确认清单已清空</div>'}${field('手动添加','manualTodo','','text','输入一条待办')}${btn('加入待确认','manual-todo','btn full-width mt12')}`}
 function pool(){show('待办确认',poolBody(),false,'pool')}
 function redrawPool(){replaceModal('待办确认',poolBody(),false,'pool');renderRecord()}
@@ -729,6 +741,9 @@ async function act(action,b){if(await previewAction(action,b))return;const id=b?
 case 'close':dismissSheet();break;
 case 'pool':pool();break;
 case 'pool-batch':ui.batch=!ui.batch;ui.selected.clear();redrawPool();break;
+case 'flow-demo':{const session=D.sessions.find(x=>x.id===ui.flowSession);if(!session||session.demoSummary)break;session.demoSummary='示例：整理本次计划与下一步行动，以下卡片需逐条核对。';session.summary=session.demoSummary;session.demoTranscript='示例转录：核实资料，整理问题，并约定下一步。';['核实相关资料','整理问题并约定下一步'].forEach((title,i)=>D.pool.push({id:uid(),title,detail:'示例原话：'+session.demoTranscript,source:'示例 · '+session.mode+'录音',sourceIds:[session.id],period:ui.cuePeriod[session.mode]||'日'}));save();close();flowResult();break}
+case 'flow-pool':closeAll();pool();break;
+case 'flow-history':closeAll();ui.historyTab='复盘';ui.reviewKind=sessionModeForHistory();nav('history');break;
 case 'pool-all':ui.selected=new Set(ui.selected.size===D.pool.length?[]:D.pool.map(t=>t.id));redrawPool();break;
 case 'pool-approve':approve([id]);break;
 case 'pool-approve-batch':approve([...ui.selected],ui.period);break;
@@ -738,13 +753,13 @@ case 'anchor-week':anchor('周计划');break;
 case 'review-cue-history':reviewVoice(ui.date);break;
 case 'cue-plans':if(b.dataset.period==='周')anchor('周计划');else{ui.cueTaskDate=ui.date;cueDayPlans()}break;
 case 'cue-period':{const mode=b.dataset.mode;ui.cuePeriod[mode]=b.dataset.period==='周'?'周':'日';const cue=$('#flowCue');if(cue)cue.outerHTML=flowCue(mode);break}
-case 'cue-step':{const mode=b.dataset.mode;ui.cueStep[mode]=Number(b.dataset.step);const cue=$('#flowCue');if(cue)cue.outerHTML=flowCue(mode);break}
+case 'cue-step':{const mode=b.dataset.mode,step=Number(b.dataset.step);ui.cueStep[mode]=step;const cue=$('#flowCue');if(cue)cue.outerHTML=flowCue(mode);if(step===1)flowResult();if(step===2)pool();if(step===3)flowReceipt();break}
 case 'toggle-record':if(!ui.recording&&ui.elapsed===0)ui.liveStartedAt=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});ui.recording=!ui.recording;renderRecord();break;
 case 'live-title-edit':show('会话标题',field('手动标题','liveTitleInput',ui.liveTitle)+`<p class="tiny mt12">录音中先显示模式与开始时间。只有转写有依据后，才可生成建议标题；手动标题优先。</p>`+foot('保存标题','live-title-save'));break;
 case 'live-title-save':ui.liveTitle=$('#liveTitleInput').value.trim().slice(0,80);close();renderRecord();break;
 case 'discard':show('丢弃当前录音？',card('<p class="topic-copy">仅清除本次尚未保存的录音草稿，不删除历史会话。需要保留时请选择结束并保存。</p>')+`<div class="row mt16">${btn('继续录音','close')}${btn('丢弃本次','discard-confirm','btn primary')}</div>`);break;
 case 'discard-confirm':ui.recording=false;ui.elapsed=0;ui.silence=0;ui.liveTitle='';closeAll();renderRecord();toast('本次草稿已清除，历史记录保留');break;
-case 'finish-record':{ui.recording=false;const session={lexiconSnapshot:structuredClone(ui.recordLexiconSnapshot||makeLexiconSnapshot()),id:uid(),kind:ui.mode==='复盘'?'复盘':'录音',title:ui.liveTitle||ui.mode+'录音 · 待整理',titleSource:ui.liveTitle?'manual':'none',date:ui.date,mode:ui.mode,category:'话题',duration:Math.max(1,Math.round(ui.elapsed/60)),status:'待处理',summary:'已结束本次录音流程，等待音频与总结服务接入。',topics:[],lines:[]};if(ui.mode==='专项'){const t=D.settings.specialTemplates.find(x=>x.id===D.settings.activeSpecialId);if(!ui.liveTitle)session.title=(t?.name||'专项')+' · 待整理';session.templateId=t?.id;session.goal=ui.specialGoal||'';if(session.goal)session.summary='本次目标：'+session.goal+'。音频与总结服务待接入。'}D.sessions.unshift(session);ui.liveTitle='';ui.elapsed=0;ui.silence=0;save();renderRecord();toast('本次记录已保存到历史');break}
+case 'finish-record':{ui.recording=false;const session={lexiconSnapshot:structuredClone(ui.recordLexiconSnapshot||makeLexiconSnapshot()),id:uid(),flowVersion:1,kind:ui.mode==='复盘'?'复盘':'录音',title:ui.liveTitle||ui.mode+'录音 · 待整理',titleSource:ui.liveTitle?'manual':'none',date:ui.date,mode:ui.mode,category:'话题',duration:Math.max(1,Math.round(ui.elapsed/60)),status:'待处理',summary:'已结束本次录音流程，等待音频与总结服务接入。',topics:[],lines:[]};if(ui.mode==='专项'){const t=D.settings.specialTemplates.find(x=>x.id===D.settings.activeSpecialId);if(!ui.liveTitle)session.title=(t?.name||'专项')+' · 待整理';session.templateId=t?.id;session.goal=ui.specialGoal||'';if(session.goal)session.summary='本次目标：'+session.goal+'。音频与总结服务待接入。'}D.sessions.unshift(session);ui.liveTitle='';ui.elapsed=0;ui.silence=0;save();renderRecord();if(['计划','复盘'].includes(session.mode)){ui.flowSession=session.id;flowResult()}else toast('本次记录已保存到历史');break}
 case 'silence-help':show('静默检测',card('<p class="topic-copy">前面的秒数是本次连续静默时长，后面是结束会话阈值。有声音时应归零，持续静默达到阈值后结束当前分段。</p><p class="tiny">本页演示计时变化；真实人声检测由本地 VAD 模型驱动。</p>')+btn('模拟检测到人声，计时归零','silence-reset','btn primary full-width mt12')+btn('调整阈值','monitor','btn full-width mt12'));break;
 case 'silence-reset':ui.silence=0;close();renderRecord();toast('检测到人声，静默计时归零');break;
 case 'toggle-transcript':D.settings.transcribe=!D.settings.transcribe;save();renderRecord();toast('实时转写已'+(D.settings.transcribe?'开启':'关闭')+'，录音状态不变');break;
@@ -867,7 +882,7 @@ document.addEventListener('pointerup',e=>{if(sheetDrag&&e.pointerId===sheetDrag.
 document.addEventListener('pointercancel',()=>{sheetDrag=null});
 setInterval(()=>{if(ui.recording){ui.elapsed++;if(ui.mode==='监听'){ui.silence++;if(ui.silence>D.settings.silence)ui.silence=0;const timer=$('#recordTimer');if(timer)timer.textContent=formatTime(ui.elapsed);const c=$('#silenceCounter');if(c)c.textContent=ui.silence+'s / '+D.settings.silence+'s';const meter=$('#silenceMeter');if(meter)meter.style.width=ui.silence/D.settings.silence*100+'%'} }},1000);
 // v1.4 review prototype. Similarities are explicit fixtures, not audio inference.
-const PREVIEW_BUILD='1.4.2 · 2026-11-19';
+const PREVIEW_BUILD='1.4.3 · 2026-11-19';
 const demoPairs={'v1:v2':.91,'v1:v3':.88,'v2:v3':.87,'v4:v5':.89};
 const lexKinds=['人名','机构 / 品牌','地点 / 楼盘','专业术语','缩写','其他'];
 function initPreview(){

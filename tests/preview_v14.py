@@ -66,8 +66,8 @@ with sync_playwright() as p:
         screenshots.append({'file': 'screenshots/' + name + '.png', 'height': round(dimensions['height'])})
 
     fresh()
-    assert page.title().endswith('v1.4.2')
-    ok('Initial render has the v1.4.2 title and no JavaScript error')
+    assert page.title().endswith('v1.4.3')
+    ok('Initial render has the v1.4.3 title and no JavaScript error')
     capture('01-recording-full')
     for mode in ('监听','随想','专项','计划','复盘'):
         page.locator(f'#modeRow [data-mode="{mode}"]').click()
