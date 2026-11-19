@@ -1,0 +1,125 @@
+{
+  "preview": "v1.4.2",
+  "html_sha256": "37a92414a09aa65777810bd5f6c2aeb609cfcf308882fab461f465a6dd0d2268",
+  "checks": [
+    {
+      "check": "计划录音卡与监听同高，提词器位于录音卡下方",
+      "status": "passed"
+    },
+    {
+      "check": "计划日周切换使用对应计划，录音状态和计时不变",
+      "status": "passed"
+    },
+    {
+      "check": "计划日计划打开同日列表，周计划打开原有周计划锚",
+      "status": "passed"
+    },
+    {
+      "check": "计划流程步骤与提示可切换，日周切换保留当前步骤",
+      "status": "passed"
+    },
+    {
+      "check": "复盘录音卡与监听同高，提词器位于录音卡下方",
+      "status": "passed"
+    },
+    {
+      "check": "复盘日周切换使用对应计划，录音状态和计时不变",
+      "status": "passed"
+    },
+    {
+      "check": "复盘日计划打开同日列表，周计划打开原有周计划锚",
+      "status": "passed"
+    },
+    {
+      "check": "复盘流程步骤与提示可切换，日周切换保留当前步骤",
+      "status": "passed"
+    },
+    {
+      "check": "复盘保留回看当日录音入口",
+      "status": "passed"
+    },
+    {
+      "check": "计划与复盘分别保持自己的日周选择",
+      "status": "passed"
+    },
+    {
+      "check": "无同日计划时显示空态，不串用其他日期",
+      "status": "passed"
+    },
+    {
+      "check": "320px 窄屏录音卡对齐，提词器两页签无横向溢出",
+      "status": "passed"
+    },
+    {
+      "check": "390px 窄屏录音卡对齐，提词器两页签无横向溢出",
+      "status": "passed"
+    },
+    {
+      "check": "浏览器无 JavaScript 运行错误",
+      "status": "passed"
+    }
+  ],
+  "measurements": {
+    "监听": {
+      "heroTop": 136.046875,
+      "heroBottom": 487.046875,
+      "cueTop": null
+    },
+    "计划": {
+      "heroTop": 136.046875,
+      "heroBottom": 474.046875,
+      "cueTop": 486.046875
+    },
+    "复盘": {
+      "heroTop": 136.046875,
+      "heroBottom": 474.046875,
+      "cueTop": 486.046875
+    }
+  },
+  "screenshots": [
+    {
+      "file": "recording-monitor-reference.png",
+      "kind": "完整 HTML 内容长图",
+      "width": 390,
+      "height": 1026
+    },
+    {
+      "file": "recording-plan-day.png",
+      "kind": "完整 HTML 内容长图",
+      "width": 390,
+      "height": 1104
+    },
+    {
+      "file": "recording-plan-week.png",
+      "kind": "完整 HTML 内容长图",
+      "width": 390,
+      "height": 1104
+    },
+    {
+      "file": "cue-week-plans-open.png",
+      "kind": "完整 HTML 内容长图",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "cue-day-plans-open.png",
+      "kind": "完整 HTML 内容长图",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "recording-review-day.png",
+      "kind": "完整 HTML 内容长图",
+      "width": 390,
+      "height": 1134
+    },
+    {
+      "file": "recording-review-week.png",
+      "kind": "完整 HTML 内容长图",
+      "width": 390,
+      "height": 1134
+    }
+  ],
+  "scope": "HTML 演示交互；未修改 APK，未执行麦克风/ASR/AI/声纹。",
+  "errors": []
+}
