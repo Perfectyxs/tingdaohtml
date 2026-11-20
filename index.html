@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="theme-color" content="#f4f6fa"/>
-<title>听道 · 计划与复盘提词器原型 v1.4.5</title>
+<title>听道 · 计划与复盘提词器原型 v1.4.6</title>
 <style>
 :root{
   --bg:#eef1f6;--paper:#f8f9fc;--ink:#171a20;--sub:#69717e;--muted:#98a0ac;
@@ -473,7 +473,7 @@ svg{display:block}
    <div class="spec-item"><svg><use href="#check"/></svg><span>复盘展示当天概览；历史按每日复盘、复盘录音、计划记录归档，经验卡集中在历史确认。</span></div>
    <div class="spec-item"><svg><use href="#check"/></svg><span>待办池是计划入库主入口，支持批量处理、日/周/月/季/年与五秒撤回。</span></div>
   </div></div>
-  <div class="version">v1.4.5 · 2026-11-20 · 短内容弹层自适应</div>
+  <div class="version">v1.4.6 · 2026-11-20 · 话题卡整体点击</div>
  </aside>
  <div class="device-wrap">
   <div class="device">
@@ -633,7 +633,8 @@ function flowCue(mode){
 
 function renderRecord(){
 $('#screen-record').innerHTML=top('录音',btn(ic('inbox'),'pool','icon-btn',`aria-label="待办确认，${D.pool.length}条"`))+`<p class="page-sub">把对话、灵感和学习沉淀下来</p><div class="mode-row" id="modeRow">${['监听','随想','专项','计划','复盘'].map(m=>`<button class="mode ${m===ui.mode?'active':''}" data-mode="${m}">${m}</button>`).join('')}</div>`+`<div class="glass-card rec-hero mt12"><div class="rec-state"><span class="live-dot" ${ui.recording?'':'style="animation:none;background:#929baa"'}></span><span>${ui.recording?'正在'+ui.mode:ui.elapsed?'录音已暂停':'准备录音'}</span></div><div class="wave" id="recordWave">${Array.from({length:27},(_,i)=>`<span style="height:${15+(i*17)%43}px"></span>`).join('')}</div><div class="timer" id="recordTimer">${formatTime(ui.elapsed)}</div><div class="rec-caption">${ui.mode==='监听'?'逐句记录 · 自动识别话题':ui.mode+'录音 · 保留原始表达'}</div><div class="live-title"><span>${esc(ui.liveTitle||(ui.recording?ui.mode+'中 · '+ui.liveStartedAt:'等待下一段录音'))}</span>${btn('修改标题','live-title-edit','inline-link')}</div><div class="rec-controls">${btn(ic('trash'),'discard','rec-small','aria-label="丢弃当前录音"')}${btn(ic(ui.recording?'pause':'mic'),'toggle-record','rec-main',`aria-label="${ui.recording?'暂停录音':ui.elapsed?'继续录音':'开始录音'}"`)}${btn(ic('stop'),'finish-record','rec-small','aria-label="结束并保存录音"')}</div><div class="rec-foot ${ui.mode==='监听'?'':'single'}">${ui.mode==='监听'?btn(ic('clock')+'静默 <b id="silenceCounter">'+ui.silence+'s / '+D.settings.silence+'s</b>','silence-help','mini-control'):''}${btn(ic('wave')+'实时转写 <b>'+(D.settings.transcribe?'开启':'关闭')+'</b>','toggle-transcript','mini-control','aria-label="切换实时转写"')}</div>${ui.mode==='监听'?'<div class="silencebar"><i id="silenceMeter" style="width:'+ui.silence/D.settings.silence*100+'%"></i></div>':''}</div>`+
-(ui.mode==='监听'?head('当前话题')+card(`<div class="topic-title"><span class="topic-icon">${ic('target')}</span><span class="grow">话题 · 学位名额</span><span class="chip blue">识别中</span></div><p class="topic-copy">江哥关注学位口径与补充协议，已记录逐句对话。</p><div class="topic-foot"><span class="tiny">14:25 起 · 6 分 12 秒</span>${btn('展开转写 ›','transcript','inline-link')}</div>`)+card(`<div class="topic-title"><span class="topic-icon" style="background:var(--violet-soft);color:var(--violet)">${ic('bulb')}</span><span class="grow">话题 · 江景夜景</span><span class="chip violet">8 句</span></div><p class="topic-copy">夜景展开角度、周末人流与客户实际生活需求。</p><div class="topic-foot"><span class="tiny">14:11 起 · 3 句</span>${btn('展开转写 ›','topic-night','inline-link')}</div>`,'mt8'):
+(ui.mode==='监听'?head('当前话题')+`<button class="glass-card topic-card full-width" data-action="transcript" aria-label="查看话题学位名额的转写"><div class="topic-title"><span class="topic-icon">${ic('target')}</span><span class="grow">话题 · 学位名额</span><span class="chip blue">识别中</span></div><p class="topic-copy">江哥关注学位口径与补充协议，已记录逐句对话。</p><div class="topic-foot"><span class="tiny">14:25 起 · 6 分 12 秒</span></div></button><button class="glass-card topic-card full-width mt8" data-action="topic-night" aria-label="查看话题江景夜景"><div class="topic-title"><span class="topic-icon" style="background:var(--violet-soft);color:var(--violet)">${ic('bulb')}</span><span class="grow">话题 · 江景夜景</span><span class="chip violet">8 句</span></div><p class="topic-copy">夜景展开角度、周末人流与客户实际生活需求。</p><div class="topic-foot"><span class="tiny">14:11 起 · 3 句</span></div></button>`:
+
 ['计划','复盘'].includes(ui.mode)?flowCue(ui.mode):
 ui.mode==='随想'?ideaCard():specialCard())+
 head('今日声音')+card('<div class="row between"><b>2h 46m</b><span class="tiny">对话 112′ · 学习 16′ · 娱乐 38′</span></div>');}
