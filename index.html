@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="theme-color" content="#f4f6fa"/>
-<title>听道 · 计划与复盘提词器原型 v1.4.6</title>
+<title>听道 · 计划与复盘提词器原型 v1.4.7</title>
 <style>
 :root{
   --bg:#eef1f6;--paper:#f8f9fc;--ink:#171a20;--sub:#69717e;--muted:#98a0ac;
@@ -420,7 +420,7 @@ svg{display:block}
 .month-grid{margin-top:8px}.month-day{font-size:11px}.month-day.has-data:after{bottom:3px}
 </style>
 <style>
-.overlay .sheet,.overlay.full .sheet{width:100%;min-width:0;max-height:var(--sheet-max,85%)!important}.overlay[data-sheet-key="discard-confirmation"] .sheet,.overlay[data-sheet-key="mode-detail"] .sheet{min-height:0!important}.sheet-body{overflow-x:hidden}
+.overlay .sheet,.overlay.full .sheet{width:100%;min-width:0;max-height:var(--sheet-max,85%)!important}.overlay[data-sheet-key="discard-confirmation"] .sheet,.overlay[data-sheet-key="mode-detail"] .sheet,.overlay[data-sheet-key="speaker-correct"] .sheet{min-height:0!important}.sheet-body{overflow-x:hidden}
 .tag-palette{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.tag-choice{min-width:0;width:100%;white-space:normal;text-align:left;overflow-wrap:anywhere;line-height:1.45;border:1px solid var(--line)}
 .palette-presets{display:grid;gap:12px;margin-top:14px}.palette-group strong{font-size:11px;display:block;margin-bottom:7px}.palette-colors{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}.palette-color{display:flex;align-items:center;flex-direction:column;gap:5px;min-width:0;padding:6px 2px;border-radius:10px;background:var(--glass);border:1px solid transparent}.palette-color.active{border-color:var(--blue)}.palette-color i{display:block;width:21px;height:21px;border-radius:50%;box-shadow:inset 0 1px 2px #0001}.palette-color small{font-size:8px;color:var(--sub);white-space:nowrap}
 .avatar-edit{padding:0;background:none;display:inline-flex;flex:none;border-radius:15px}.pixel-role{display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--avatar-color) 20%,transparent);background:color-mix(in srgb,var(--avatar-color) 28%,var(--paper));color:#283242;overflow:hidden}.pixel-role svg{width:86%;height:86%}.pixel-me{background:conic-gradient(from 220deg,#a0b9d8,#bfa4c9,#daaac1,#d8bc9d,#afcfaa,#9dc7c4,#a0b9d8)}:root[data-theme=dark] .pixel-role{color:#f0f3f9}
@@ -473,7 +473,7 @@ svg{display:block}
    <div class="spec-item"><svg><use href="#check"/></svg><span>复盘展示当天概览；历史按每日复盘、复盘录音、计划记录归档，经验卡集中在历史确认。</span></div>
    <div class="spec-item"><svg><use href="#check"/></svg><span>待办池是计划入库主入口，支持批量处理、日/周/月/季/年与五秒撤回。</span></div>
   </div></div>
-  <div class="version">v1.4.6 · 2026-11-20 · 话题卡整体点击</div>
+  <div class="version">v1.4.7 · 2026-11-20 · 逐句说话人直接纠正</div>
  </aside>
  <div class="device-wrap">
   <div class="device">
@@ -655,7 +655,7 @@ function poolBody(){return `<div class="row between"><span class="tiny">共 ${D.
 function pool(){show('待办确认',poolBody(),false,'pool')}
 function redrawPool(){replaceModal('待办确认',poolBody(),false,'pool');renderRecord()}
 function approve(ids,period){const items=D.pool.filter(t=>ids.includes(t.id));if(!items.length){toast('请先选择待办');return}D.pool=D.pool.filter(t=>!ids.includes(t.id));items.forEach(t=>D.tasks.push({...t,period:period||t.period,done:false,parent:null,depends:[],date:ui.reviewDate,source:t.source}));ui.selected.clear();ui.batch=false;save();redrawPool();undo(`已确认 ${items.length} 条待办`,()=>{D.tasks=D.tasks.filter(t=>!ids.includes(t.id));D.pool.push(...items);save();renderScreen();if(ui.stack.at(-1)?.key==='pool')redrawPool()});toast('已加入对应周期计划')}
-function transcriptBody(ids=D.lines.map(x=>x.id)){return `<div class="tiny">逐句转写 · 点击姓名，再选择纠正</div>${ids.map(id=>{const l=D.lines.find(l=>l.id===id);if(!l)return '';return `<div class="bubble"><time>${esc(l.time)}</time><button class="speaker-name" data-action="speaker-menu" data-id="${l.id}">${esc(D.roles.find(r=>r.id===l.role)?.name||'陌生人')}</button>${esc(l.text)}</div>`}).join('')}<div class="small-card mt12"><b style="font-size:12px">待办已自动整理</b><p class="tiny">补充协议与合同跟进已送入待确认清单。</p>${btn('查看待办确认','pool','btn full-width')}</div>`}
+function transcriptBody(ids=D.lines.map(x=>x.id)){return `<div class="tiny">逐句转写 · 点击姓名纠正说话人</div>${ids.map(id=>{const l=D.lines.find(l=>l.id===id);if(!l)return '';return `<div class="bubble"><time>${esc(l.time)}</time><button class="speaker-name" data-action="speaker-menu" data-id="${l.id}">${esc(D.roles.find(r=>r.id===l.role)?.name||'陌生人')}</button>${esc(l.text)}</div>`}).join('')}<div class="small-card mt12"><b style="font-size:12px">待办已自动整理</b><p class="tiny">补充协议与合同跟进已送入待确认清单。</p>${btn('查看待办确认','pool','btn full-width')}</div>`}
 function transcript(ids){ui.transcriptIds=ids;show(ui.topic+' · 转写',transcriptBody(ids),true,'transcript')}
 function sessionDetail(id){const s=D.sessions.find(s=>s.id===id);ui.sessionId=id;show(s.title,`<div class="row between"><span class="tiny">${s.date} · ${s.duration} 分钟</span>${btn(s.mode+'模式','mode-detail','mode-link',`data-value="${s.mode}"`)}</div>`+card(`<strong style="font-size:12px">本次摘要</strong><p class="topic-copy">${esc(s.summary)}</p>`,'mt12')+head('话题')+`<div class="session-topics">${s.topics.map(t=>btn(t,'session-topic','topic-chip',`data-value="${t}"`)).join('')||'<span class="tiny">该记录未归入普通话题</span>'}</div>`+head('本次专业词表')+btn(s.lexiconSnapshot?s.lexiconSnapshot.packs.map(p=>p.name+' v'+p.revision).join(' / ')||'未选择专业词表':'旧记录未保存词表版本','lexicon-session-snapshot','btn full-width',`data-id="${s.id}"`)+head('逐句转写')+(s.lines.length?transcriptBody(s.lines):`<div class="empty">${s.status==='失败'?'转写失败，原始音频保留。':'暂无逐句文本。'}</div>`)+(s.status==='失败'?btn('重新转录','retry-one','btn primary full-width',`data-id="${s.id}"`):''),true,'session')}
 function renderHistory(){
@@ -766,9 +766,9 @@ case 'silence-reset':ui.silence=0;close();renderRecord();toast('检测到人声�
 case 'toggle-transcript':D.settings.transcribe=!D.settings.transcribe;save();renderRecord();toast('实时转写已'+(D.settings.transcribe?'开启':'关闭')+'，录音状态不变');break;
 case 'transcript':ui.topic='学位名额';transcript(D.lines.map(l=>l.id));break;
 case 'topic-night':ui.topic='江景夜景';show('江景夜景',card('<p class="topic-copy">话题关注夜景、周末人流与生活便利性。当前没有该段可用逐句文本，保留话题摘要。</p>')+btn('查看待办确认','pool','btn full-width mt12'));break;
-case 'speaker-menu':{ui.lineId=id;const l=D.lines.find(l=>l.id===id);show('这句的说话人',card(`<p class="topic-copy">「${esc(l.text)}」</p><p class="tiny">${l.time} · 当前：${esc(D.roles.find(r=>r.id===l.role)?.name||'陌生人')}</p>`)+btn('纠正这句说话人','speaker-correct','btn primary full-width mt12'));break}
-case 'speaker-correct':show('纠正这句说话人',`<div class="field"><label for="speakerRole">正确的说话人</label><select id="speakerRole">${activeRoleOptions()}<option value="">不认识，归入陌生声纹</option></select></div><p class="tiny mt12">只修改当前这一句的归属，不改整段对话。</p>`+foot('保存单句纠正','speaker-save'));$('#speakerRole').value=D.lines.find(l=>l.id===ui.lineId)?.role||'';break;
-case 'speaker-save':{const l=D.lines.find(l=>l.id===ui.lineId);l.role=$('#speakerRole').value||null;save();closeAll();ui.topic=ui.topic||'学位名额';transcript(ui.transcriptIds||D.lines.map(l=>l.id));toast('只纠正了所选这一句');break}
+case 'speaker-menu':ui.lineId=id;
+case 'speaker-correct':show('纠正这句说话人',`<div class="field"><label for="speakerRole">正确的说话人</label><select id="speakerRole">${activeRoleOptions()}<option value="">不认识，归入陌生声纹</option></select></div><p class="tiny mt12">只修改当前这一句的归属，不改整段对话。</p>`+foot('保存单句纠正','speaker-save'),false,'speaker-correct');$('#speakerRole').value=D.lines.find(l=>l.id===ui.lineId)?.role||'';break;
+case 'speaker-save':{const l=D.lines.find(l=>l.id===ui.lineId);l.role=$('#speakerRole').value||null;save();ui.stack.pop();const parent=ui.stack.at(-1);if(parent?.key==='transcript'){parent.body=transcriptBody(ui.transcriptIds);drawModal()}else if(parent?.key==='session'){ui.stack.pop();sessionDetail(ui.sessionId)}else syncOpenPanel();toast('只纠正了所选这一句');break}
 case 'idea-expand':{ui.ideaExpanded=!ui.ideaExpanded;$('#ideaExtra').hidden=!ui.ideaExpanded;b.textContent=ui.ideaExpanded?'收起补充文字 ‹':'补充文字 ›';break}
 case 'save-idea':ui.ideaTitle=$('#ideaTitle').value.trim();ui.ideaText=$('#ideaText').value.trim();if(!ui.ideaTitle&&!ui.ideaText){toast('先写下一段想法');return}D.sessions.unshift({id:uid(),kind:'录音',title:ui.ideaTitle||'随想',summary:ui.ideaText||'随想内容待转写',date:ui.date,mode:'随想',category:'话题',duration:1,status:'正常',topics:[],lines:[]});save();toast('随想已保存到历史');break;
 case 'idea-pool':{const title=$('#ideaTitle').value.trim()||$('#ideaText').value.trim();if(!title){toast('先写下一段想法');return}D.pool.push({id:uid(),title:title.slice(0,60),detail:$('#ideaText').value.trim(),source:'来自随想',period:'日'});save();renderRecord();toast('已送入待办确认');break}
