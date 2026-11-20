@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="theme-color" content="#f4f6fa"/>
-<title>听道 · 计划与复盘提词器原型 v1.4.4</title>
+<title>听道 · 计划与复盘提词器原型 v1.4.5</title>
 <style>
 :root{
   --bg:#eef1f6;--paper:#f8f9fc;--ink:#171a20;--sub:#69717e;--muted:#98a0ac;
@@ -420,7 +420,7 @@ svg{display:block}
 .month-grid{margin-top:8px}.month-day{font-size:11px}.month-day.has-data:after{bottom:3px}
 </style>
 <style>
-.overlay .sheet,.overlay.full .sheet{width:100%;min-width:0;max-height:var(--sheet-max,85%)!important}.overlay[data-sheet-key="discard-confirmation"] .sheet{min-height:0!important}.sheet-body{overflow-x:hidden}
+.overlay .sheet,.overlay.full .sheet{width:100%;min-width:0;max-height:var(--sheet-max,85%)!important}.overlay[data-sheet-key="discard-confirmation"] .sheet,.overlay[data-sheet-key="mode-detail"] .sheet{min-height:0!important}.sheet-body{overflow-x:hidden}
 .tag-palette{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.tag-choice{min-width:0;width:100%;white-space:normal;text-align:left;overflow-wrap:anywhere;line-height:1.45;border:1px solid var(--line)}
 .palette-presets{display:grid;gap:12px;margin-top:14px}.palette-group strong{font-size:11px;display:block;margin-bottom:7px}.palette-colors{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}.palette-color{display:flex;align-items:center;flex-direction:column;gap:5px;min-width:0;padding:6px 2px;border-radius:10px;background:var(--glass);border:1px solid transparent}.palette-color.active{border-color:var(--blue)}.palette-color i{display:block;width:21px;height:21px;border-radius:50%;box-shadow:inset 0 1px 2px #0001}.palette-color small{font-size:8px;color:var(--sub);white-space:nowrap}
 .avatar-edit{padding:0;background:none;display:inline-flex;flex:none;border-radius:15px}.pixel-role{display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--avatar-color) 20%,transparent);background:color-mix(in srgb,var(--avatar-color) 28%,var(--paper));color:#283242;overflow:hidden}.pixel-role svg{width:86%;height:86%}.pixel-me{background:conic-gradient(from 220deg,#a0b9d8,#bfa4c9,#daaac1,#d8bc9d,#afcfaa,#9dc7c4,#a0b9d8)}:root[data-theme=dark] .pixel-role{color:#f0f3f9}
@@ -473,7 +473,7 @@ svg{display:block}
    <div class="spec-item"><svg><use href="#check"/></svg><span>复盘展示当天概览；历史按每日复盘、复盘录音、计划记录归档，经验卡集中在历史确认。</span></div>
    <div class="spec-item"><svg><use href="#check"/></svg><span>待办池是计划入库主入口，支持批量处理、日/周/月/季/年与五秒撤回。</span></div>
   </div></div>
-  <div class="version">v1.4.4 · 2026-11-20 · 丢弃录音确认弹层自适应</div>
+  <div class="version">v1.4.5 · 2026-11-20 · 短内容弹层自适应</div>
  </aside>
  <div class="device-wrap">
   <div class="device">
@@ -795,7 +795,7 @@ case 'filter-save':ui.filter={word:$('#filterWord').value.trim(),mode:$('#filter
 case 'session':sessionDetail(id);break;
 case 'history-topic':{const s=D.sessions.find(s=>s.id===id);ui.topic=value;transcript(s.lines);break}
 case 'session-topic':{const s=D.sessions.find(s=>s.id===ui.sessionId);ui.topic=value;transcript(s.lines);break}
-case 'mode-detail':show(value+'模式',card(`<p class="topic-copy">${({'监听':'持续录音，按话题与静默切分；娱乐内容独立归档，音乐歌词不进入话题。','专项':'按会议、学习或销售沟通模板整理摘要、结论与行动。','随想':'保留即时想法，可在整理后送入待办确认。','计划':'对照周计划锚，说清任务、完成标准、时间与依赖。','复盘':'围绕原始对话、有效行动、偏差与下一步进行总结。'})[value]||'查看该方式下的录音记录。'}</p>`)+btn('只看该模式记录','mode-filter','btn primary full-width mt12',`data-value="${value}"`));break;
+case 'mode-detail':show(value+'模式',card(`<p class="topic-copy">${({'监听':'持续录音，按话题与静默切分；娱乐内容独立归档，音乐歌词不进入话题。','专项':'按会议、学习或销售沟通模板整理摘要、结论与行动。','随想':'保留即时想法，可在整理后送入待办确认。','计划':'对照周计划锚，说清任务、完成标准、时间与依赖。','复盘':'围绕原始对话、有效行动、偏差与下一步进行总结。'})[value]||'查看该方式下的录音记录。'}</p>`)+btn('只看该模式记录','mode-filter','btn primary full-width mt12',`data-value="${value}"`),false,'mode-detail');break;
 case 'mode-filter':ui.historyTab='录音';ui.filter.mode=value;closeAll();nav('history');break;
 case 'retry':{const a=D.sessions.filter(s=>s.kind==='录音'&&(s.status==='失败'||s.status==='待处理'));show('批量重新转录',`<div class="row between"><span class="tiny">失败音频保留，不自动删除</span>${btn('全选 / 取消','retry-all','inline-link')}</div>${a.map(s=>`<label class="check-option"><input class="check" type="checkbox" data-retry="${s.id}"/><div><b>${esc(s.title)}</b><small>${s.date} · ${s.status}</small></div></label>`).join('')||'<div class="empty">暂无待重新转录记录</div>'}<div id="retryFeedback" class="tiny mt12"></div>`+foot('提交所选重新转录','retry-submit'),true,'retry');break}
 case 'retry-all':{const a=$$('[data-retry]');const all=a.every(x=>x.checked);a.forEach(x=>x.checked=!all);break}

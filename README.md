@@ -2,7 +2,7 @@
 
 在线预览：**https://perfectyxs.github.io/tingdaohtml/**
 
-当前改版：**v1.4.4 · 2026-11-20**。HTML 是独立仓库；Android、唯一系统架构和 APK 发布位于 [Perfectyxs/Earthonline](https://github.com/Perfectyxs/Earthonline)。
+当前改版：**v1.4.5 · 2026-11-20**。HTML 是独立仓库；Android、唯一系统架构和 APK 发布位于 [Perfectyxs/Earthonline](https://github.com/Perfectyxs/Earthonline)。
 
 - 丢弃录音确认弹层随内容收缩，待办确认等弹层保持原有动态高度。
 - 计划、复盘录音的整理、待办确认和本地写入结果可体验示例流程；真实转录和本地 AI 尚待接入。
