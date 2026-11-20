@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="theme-color" content="#f4f6fa"/>
-<title>听道 · 计划与复盘提词器原型 v1.4.3</title>
+<title>听道 · 计划与复盘提词器原型 v1.4.4</title>
 <style>
 :root{
   --bg:#eef1f6;--paper:#f8f9fc;--ink:#171a20;--sub:#69717e;--muted:#98a0ac;
@@ -420,7 +420,7 @@ svg{display:block}
 .month-grid{margin-top:8px}.month-day{font-size:11px}.month-day.has-data:after{bottom:3px}
 </style>
 <style>
-.overlay .sheet,.overlay.full .sheet{width:100%;min-width:0;max-height:var(--sheet-max,85%)!important}.sheet-body{overflow-x:hidden}
+.overlay .sheet,.overlay.full .sheet{width:100%;min-width:0;max-height:var(--sheet-max,85%)!important}.overlay[data-sheet-key="discard-confirmation"] .sheet{min-height:0!important}.sheet-body{overflow-x:hidden}
 .tag-palette{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.tag-choice{min-width:0;width:100%;white-space:normal;text-align:left;overflow-wrap:anywhere;line-height:1.45;border:1px solid var(--line)}
 .palette-presets{display:grid;gap:12px;margin-top:14px}.palette-group strong{font-size:11px;display:block;margin-bottom:7px}.palette-colors{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}.palette-color{display:flex;align-items:center;flex-direction:column;gap:5px;min-width:0;padding:6px 2px;border-radius:10px;background:var(--glass);border:1px solid transparent}.palette-color.active{border-color:var(--blue)}.palette-color i{display:block;width:21px;height:21px;border-radius:50%;box-shadow:inset 0 1px 2px #0001}.palette-color small{font-size:8px;color:var(--sub);white-space:nowrap}
 .avatar-edit{padding:0;background:none;display:inline-flex;flex:none;border-radius:15px}.pixel-role{display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--avatar-color) 20%,transparent);background:color-mix(in srgb,var(--avatar-color) 28%,var(--paper));color:#283242;overflow:hidden}.pixel-role svg{width:86%;height:86%}.pixel-me{background:conic-gradient(from 220deg,#a0b9d8,#bfa4c9,#daaac1,#d8bc9d,#afcfaa,#9dc7c4,#a0b9d8)}:root[data-theme=dark] .pixel-role{color:#f0f3f9}
@@ -473,7 +473,7 @@ svg{display:block}
    <div class="spec-item"><svg><use href="#check"/></svg><span>复盘展示当天概览；历史按每日复盘、复盘录音、计划记录归档，经验卡集中在历史确认。</span></div>
    <div class="spec-item"><svg><use href="#check"/></svg><span>待办池是计划入库主入口，支持批量处理、日/周/月/季/年与五秒撤回。</span></div>
   </div></div>
-  <div class="version">v1.4.3 · 2026-11-19 · 计划与复盘录音整理及待办确认示例</div>
+  <div class="version">v1.4.4 · 2026-11-20 · 丢弃录音确认弹层自适应</div>
  </aside>
  <div class="device-wrap">
   <div class="device">
@@ -597,7 +597,7 @@ const save=()=>{try{localStorage.setItem('tingdao-v13',JSON.stringify({schema:13
 let toastTimer,undoTimer,undoFn;function toast(t){$('#toast').textContent=t;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),2600)}
 function undo(message,fn){clearInterval(undoTimer);undoFn=fn;let left=5;$('#undoMessage').textContent=message;$('#undoButton').textContent='撤销 · '+left+'s';$('#undoBar').classList.add('show');undoTimer=setInterval(()=>{left--;$('#undoButton').textContent='撤销 · '+left+'s';if(left<=0){clearInterval(undoTimer);undoFn=null;$('#undoBar').classList.remove('show')}},1000)}
 function show(title,body,full=false,key=''){ui.stack.push({title,body,full,key});drawModal()}
-function drawModal(){const x=ui.stack.at(-1);const ov=$('#appOverlay');if(!x){ov.classList.remove('open');return}ov.className='overlay open'+(x.full?' full':'');const screen=$('.screen.active'),bar=$('.topbar',screen||document),box=ov.getBoundingClientRect();const barBottom=bar?bar.getBoundingClientRect().bottom-box.top+(screen?.scrollTop||0):110;ov.style.setProperty('--sheet-max',Math.max(180,box.height-Math.max(88,barBottom+8))+'px');ov.innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(x.title)}"><div class="handle"></div><div class="sheet-head"><div><h3>${esc(x.title)}</h3></div>${btn(ui.stack.length>1?'‹':'×','close','back-btn','aria-label="'+(ui.stack.length>1?'返回':'关闭')+'"')}</div><div class="sheet-body">${x.body}</div></div>`;const footer=$('[data-sheet-footer]',ov);if(footer)$('.sheet',ov).appendChild(footer);updateRanges();}
+function drawModal(){const x=ui.stack.at(-1);const ov=$('#appOverlay');if(!x){ov.classList.remove('open');return}ov.className='overlay open'+(x.full?' full':'');ov.dataset.sheetKey=x.key||'';const screen=$('.screen.active'),bar=$('.topbar',screen||document),box=ov.getBoundingClientRect();const barBottom=bar?bar.getBoundingClientRect().bottom-box.top+(screen?.scrollTop||0):110;ov.style.setProperty('--sheet-max',Math.max(180,box.height-Math.max(88,barBottom+8))+'px');ov.innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(x.title)}"><div class="handle"></div><div class="sheet-head"><div><h3>${esc(x.title)}</h3></div>${btn(ui.stack.length>1?'‹':'×','close','back-btn','aria-label="'+(ui.stack.length>1?'返回':'关闭')+'"')}</div><div class="sheet-body">${x.body}</div></div>`;const footer=$('[data-sheet-footer]',ov);if(footer)$('.sheet',ov).appendChild(footer);updateRanges();}
 function replaceModal(title,body,full=false,key=''){if(ui.stack.length)ui.stack.pop();show(title,body,full,key)}
 function syncOpenPanel(){const x=ui.stack.at(-1);if(!x){drawModal();return}switch(x.key){case 'anchor':anchor(ui.anchorLevel,true);break;case 'cue-tasks':cueDayPlans(true);break;case 'tasks':replaceModal('今日计划',card(taskRows(todayTasks())),true,'tasks');break;case 'sleep-records':replaceModal('睡眠记录',sleepRows(),false,'sleep-records');break;case 'panorama':ui.stack.pop();panorama();break;case 'role':roleDetail(ui.roleId,true);break;case 'lexicon-library':lexiconLibrary(true);break;case 'lexicon-pack':lexPackDetail(ui.lexPackId,true);break;case 'voices':voices(true);break;case 'role-voice':roleVoicePanel(ui.voiceRoleId,true);break;case 'experience-library':replaceModal('经验卡管理',experienceList(),true,'experience-library');break;default:drawModal()}}
 function close(){ui.stack.pop();syncOpenPanel()}
@@ -757,7 +757,7 @@ case 'cue-step':{const mode=b.dataset.mode,step=Number(b.dataset.step);ui.cueSte
 case 'toggle-record':if(!ui.recording&&ui.elapsed===0)ui.liveStartedAt=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});ui.recording=!ui.recording;renderRecord();break;
 case 'live-title-edit':show('会话标题',field('手动标题','liveTitleInput',ui.liveTitle)+`<p class="tiny mt12">录音中先显示模式与开始时间。只有转写有依据后，才可生成建议标题；手动标题优先。</p>`+foot('保存标题','live-title-save'));break;
 case 'live-title-save':ui.liveTitle=$('#liveTitleInput').value.trim().slice(0,80);close();renderRecord();break;
-case 'discard':show('丢弃当前录音？',card('<p class="topic-copy">仅清除本次尚未保存的录音草稿，不删除历史会话。需要保留时请选择结束并保存。</p>')+`<div class="row mt16">${btn('继续录音','close')}${btn('丢弃本次','discard-confirm','btn primary')}</div>`);break;
+case 'discard':show('丢弃当前录音？',card('<p class="topic-copy">仅清除本次尚未保存的录音草稿，不删除历史会话。需要保留时请选择结束并保存。</p>')+`<div class="row mt16">${btn('继续录音','close')}${btn('丢弃本次','discard-confirm','btn primary')}</div>`,false,'discard-confirmation');break;
 case 'discard-confirm':ui.recording=false;ui.elapsed=0;ui.silence=0;ui.liveTitle='';closeAll();renderRecord();toast('本次草稿已清除，历史记录保留');break;
 case 'finish-record':{ui.recording=false;const session={lexiconSnapshot:structuredClone(ui.recordLexiconSnapshot||makeLexiconSnapshot()),id:uid(),flowVersion:1,kind:ui.mode==='复盘'?'复盘':'录音',title:ui.liveTitle||ui.mode+'录音 · 待整理',titleSource:ui.liveTitle?'manual':'none',date:ui.date,mode:ui.mode,category:'话题',duration:Math.max(1,Math.round(ui.elapsed/60)),status:'待处理',summary:'已结束本次录音流程，等待音频与总结服务接入。',topics:[],lines:[]};if(ui.mode==='专项'){const t=D.settings.specialTemplates.find(x=>x.id===D.settings.activeSpecialId);if(!ui.liveTitle)session.title=(t?.name||'专项')+' · 待整理';session.templateId=t?.id;session.goal=ui.specialGoal||'';if(session.goal)session.summary='本次目标：'+session.goal+'。音频与总结服务待接入。'}D.sessions.unshift(session);ui.liveTitle='';ui.elapsed=0;ui.silence=0;save();renderRecord();if(['计划','复盘'].includes(session.mode)){ui.flowSession=session.id;flowResult()}else toast('本次记录已保存到历史');break}
 case 'silence-help':show('静默检测',card('<p class="topic-copy">前面的秒数是本次连续静默时长，后面是结束会话阈值。有声音时应归零，持续静默达到阈值后结束当前分段。</p><p class="tiny">本页演示计时变化；真实人声检测由本地 VAD 模型驱动。</p>')+btn('模拟检测到人声，计时归零','silence-reset','btn primary full-width mt12')+btn('调整阈值','monitor','btn full-width mt12'));break;
@@ -882,7 +882,7 @@ document.addEventListener('pointerup',e=>{if(sheetDrag&&e.pointerId===sheetDrag.
 document.addEventListener('pointercancel',()=>{sheetDrag=null});
 setInterval(()=>{if(ui.recording){ui.elapsed++;if(ui.mode==='监听'){ui.silence++;if(ui.silence>D.settings.silence)ui.silence=0;const timer=$('#recordTimer');if(timer)timer.textContent=formatTime(ui.elapsed);const c=$('#silenceCounter');if(c)c.textContent=ui.silence+'s / '+D.settings.silence+'s';const meter=$('#silenceMeter');if(meter)meter.style.width=ui.silence/D.settings.silence*100+'%'} }},1000);
 // v1.4 review prototype. Similarities are explicit fixtures, not audio inference.
-const PREVIEW_BUILD='1.4.3 · 2026-11-19';
+const PREVIEW_BUILD='1.4.4 · 2026-11-20';
 const demoPairs={'v1:v2':.91,'v1:v3':.88,'v2:v3':.87,'v4:v5':.89};
 const lexKinds=['人名','机构 / 品牌','地点 / 楼盘','专业术语','缩写','其他'];
 function initPreview(){
