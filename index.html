@@ -637,7 +637,7 @@ $('#screen-record').innerHTML=top('录音',btn(ic('inbox'),'pool','icon-btn',`ar
 
 ['计划','复盘'].includes(ui.mode)?flowCue(ui.mode):
 ui.mode==='随想'?ideaCard():specialCard())+
-head('今日声音')+card('<div class="row between"><b>2h 46m</b><span class="tiny">对话 112′ · 学习 16′ · 娱乐 38′</span></div>');}
+head('今日声音')+btn('<div class="row between"><b>2h 46m</b><span class="tiny">对话 112′ · 学习 16′ · 娱乐 38′</span></div>','review-voice','glass-card topic-card full-width','aria-label="查看今日声音"');}
 function formatTime(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
 
 function flowResult(){
