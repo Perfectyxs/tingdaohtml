@@ -20,3 +20,10 @@
 本地预览：`python3 -m http.server 8765`；检查：`python3 tests/preview_v14.py`（需要 Playwright 和系统 Chromium）。
 
 `main` 上的 HTML / assets 更新由 GitHub Actions 发布至上述 Pages 地址；站点预览与 Android PR 合并、APK 发布分别管理。
+
+
+### 2026-11-28 · 单条语录手动删除
+
+角色详情及待归属语录支持左滑显示删除按钮，点击后删除该条语录；键盘左方向键也可显示按钮。来源录音和原始句段保留，删除可在提示条中撤销。原“移出语录”仍只将语录退回待归属，不删除来源。
+
+通过真实指针滑动、删除、撤销、原录音/原句段不变及浏览器脚本错误检查。Android 和逐屏对照持续更新在 [Earthonline main](https://github.com/Perfectyxs/Earthonline/blob/main/docs/visual-verification/alpha11/review/README.md)。
