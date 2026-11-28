@@ -545,7 +545,7 @@ function specialTemplateBody(){
 function specialTemplates(){show('专项模板',specialTemplateBody(),true,'special-templates')}
 function specialTemplateEditor(id){
  const t=D.settings.specialTemplates.find(x=>x.id===id);ui.specialEditId=id||null;
- show(t?'编辑专项模板':'新建专项模板',field('模板名称','templateName',t?.name||'')+area('整理维度（用 · 分隔）','templateGuide',t?.guide||'')+`<p class="tiny mt12">这里设定长期复用的结构；录音时再填写本次目标。</p>`+foot('保存模板','special-template-save'),false,'special-template-editor');
+ show(t?'编辑专项模板':'新建专项模板',field('模板名称','templateName',t?.name||'')+area('整理维度（用 · 分隔）','templateGuide',t?.guide||'')+`<p class="tiny mt12">这里设定长期复用的结构；录音时再填写本次目标。</p>`+foot('保存模板','special-template-save')+(t?btn('删除模板','special-template-delete','btn full-width mt12'):''),false,'special-template-editor');
 }
 function dayVoiceSessions(date=ui.reviewDate){return D.sessions.filter(x=>x.kind==='录音'&&x.date===date&&x.status==='正常')}
 function voiceDuration(date=ui.reviewDate){const minutes=dayVoiceSessions(date).reduce((n,s)=>n+s.duration,0);return minutes?Math.floor(minutes/60)+'h '+String(minutes%60).padStart(2,'0')+'m':'—'}
@@ -797,7 +797,8 @@ case 'save-special':D.settings.activeSpecialId=$('#specialTemplate').value;ui.sp
 case 'special-templates':specialTemplates();break;
 case 'special-template-edit':specialTemplateEditor(id);break;
 case 'special-template-add':specialTemplateEditor(null);break;
-case 'special-template-save':{const name=$('#templateName').value.trim(),guide=$('#templateGuide').value.trim();if(!name||!guide){toast('请填写模板名称和整理维度');return}if(D.settings.specialTemplates.some(x=>x.name===name&&x.id!==ui.specialEditId)){toast('模板名称已存在');return}if(ui.specialEditId){Object.assign(D.settings.specialTemplates.find(x=>x.id===ui.specialEditId),{name,guide})}else{const id=uid();D.settings.specialTemplates.push({id,name,guide});D.settings.activeSpecialId=id}save();close();replaceModal('专项模板',specialTemplateBody(),true,'special-templates');renderRecord();toast('模板已保存');break}
+case 'special-template-save':{const name=$('#templateName').value.trim(),guide=$('#templateGuide').value.trim();if(!name||name.length>40||guide.length>200){toast('模板名称必填，最多40字；整理维度最多200字');return}if(D.settings.specialTemplates.some(x=>x.name.toLowerCase()===name.toLowerCase()&&x.id!==ui.specialEditId)){toast('模板名称已存在');return}if(ui.specialEditId){Object.assign(D.settings.specialTemplates.find(x=>x.id===ui.specialEditId),{name,guide})}else{const id=uid();D.settings.specialTemplates.push({id,name,guide});D.settings.activeSpecialId=id}save();close();replaceModal('专项模板',specialTemplateBody(),true,'special-templates');renderRecord();toast('模板已保存');break}
+case 'special-template-delete':{const id=ui.specialEditId;if(!id)return;D.settings.specialTemplates=D.settings.specialTemplates.filter(t=>t.id!==id);if(D.settings.activeSpecialId===id)D.settings.activeSpecialId=D.settings.specialTemplates[0]?.id||'';save();close();replaceModal('专项模板',specialTemplateBody(),true,'special-templates');renderRecord();toast('模板已删除');break}
 case 'experience-manage':show('经验卡管理',`<p class="tiny">已确认的经验保存在历史顶部「经验卡」下的「已存入历史」中。编辑不改变原始录音与来源。</p><div class="row mt12">${btn('打开经验卡','experience-tab','btn primary')}${btn('手动上传全部','upload-all','btn')}</div>`+experienceList(),true,'experience-library');break;
 case 'experience-tab':closeAll();ui.historyTab='经验卡';ui.experienceTab='pending';nav('history');break;
 case 'experience-edit':experienceEdit(id);break;
